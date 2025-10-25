@@ -123,21 +123,66 @@ void StudentList::removeStudentById(int idNum) {
 
 	//Change the gpa of the student with given id number to newGPA
 void StudentList::updateGPA(int idNum, float newGPA) {
-	
+	Node* curr = head;
+	while (curr) {
+		if (curr->data.id == idNum) {
+			curr->data.GPA = newGPA;
+			return;
+		}
+		curr = curr->next;
+	}
 }
 
-																																												//Add all students from otherList to this list.
-																																													//otherlist should be empty after this operation.
-																																														/*
-																																															For example, if the list has 3 students:
-																																																s1 <-> s2 <-> s3
-																																																	and otherList has 2 students
-																																																		s4 <-> s5
-																																																			then after mergeList the currently list should have all 5 students
-																																																				s1 <-> s2 <-> s3 <-> s4 <-> s5
-																																																					and otherList should be empty and have zero students.
-																																																						*/
-																																																							void StudentList::mergeList(StudentList &otherList) {}
+//Add all students from otherList to this list.
+//otherlist should be empty after this operation.
+/*
+For example, if the list has 3 students:
+s1 <-> s2 <-> s3
+and otherList has 2 students
+s4 <-> s5
+then after mergeList the currently list should have all 5 students
+s1 <-> s2 <-> s3 <-> s4 <-> s5
+and otherList should be empty and have zero students.
+*/
+void StudentList::mergeList(StudentList &otherList) {
+	Node* curr = otherList.head;
+	while (curr) {
+		addBack(curr->data);
+		curr = curr->next;
+	}
+	otherList.head = nullptr;
+	otherList.tail = nullptr;
+	otherList.numStudents = 0;
+}
 
-																																																								//create a StudentList of students whose gpa is at least minGPA.
-																																																									//Return
+//create a StudentList of students whose gpa is at least minGPA.
+StudentList StudentList::honorRoll(float minGPA) {
+    StudentList honors;
+    Node* curr = head;
+    while (curr) {
+        if (curr->data.GPA >= minGPA) {
+            honors.addBack(curr->data);
+        }
+        curr = curr->next;
+    }
+    return honors;
+}
+
+void StudentList::removeBelowGPA(float threshold) {
+    Node* curr = head;
+    while (curr) {
+        Node* nextNode = curr->next;  // store next node because curr may be deleted
+        if (curr->data.GPA < threshold) {
+            if (curr->prev) curr->prev->next = curr->next;
+            else head = curr->next;
+
+            if (curr->next) curr->next->prev = curr->prev;
+            else tail = curr->prev;
+
+            delete curr;
+            numStudents--;
+        }
+        curr = nextNode;
+    }
+}
+//Return
